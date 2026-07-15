@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>intheboardroom — Master Deck Template</title>
+<style>
+  /*
+    FONT NOTE: the source deck uses "TT Fors Trial" (Black / Medium weights),
+    a licensed commercial font not available as a system or web font.
+    This template declares it as the primary font-family so that it is used
+    automatically if/when the font is installed on the machine opening this
+    file; the fallback stack below ('Poppins', then system sans-serif) is
+    the closest free approximation of its geometric, rounded character.
+    To use the exact brand font, install "TT Fors Trial" locally or embed
+    it via @font-face with a licensed font file.
+  */
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
+
+  :root{
+    --navy-dark:      #0D0A27;
+    --black:          #000000;
+    --accent-blue:    #1234FF;
+    --accent-blue-2:  #2838CC;
+    --grey-footer:    #9CA3AF;
+    --white:          #FFFFFF;
+    --placeholder-grey:#D9D9D9;
+    --placeholder-border:#9CA3AF;
+    --font-main: "TT Fors Trial", "Poppins", Arial, sans-serif;
+    --font-black: "TT Fors Trial Black", "Poppins", Arial, sans-serif;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    background:#444;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:40px;
+    padding:40px 0;
+    font-family:var(--font-main);
+  }
+  .slide{
+    width:1280px;
+    height:720px;
+    background:var(--white);
+    position:relative;
+    overflow:hidden;
+    flex-shrink:0;
+  }
+  .img-placeholder{
+    background:var(--placeholder-grey);
+    border:2px dashed var(--placeholder-border);
+    display:flex; align-items:center; justify-content:center;
+    color:#6B7280; font-size:12px; font-weight:700; text-align:center;
+    font-family:'Courier New', monospace;
+  }
+  .logo-chip{
+    position:absolute; left:24px; bottom:20px;
+    width:108px; height:62px;
+    background:var(--white);
+    display:flex; align-items:center; justify-content:center;
+    z-index:30;
+  }
+  .logo-chip img{ width:96px; height:auto; object-fit:contain; }
+  .footer-confidential{
+    position:absolute; bottom:26px; left:0; width:100%;
+    text-align:center; font-size:9px; font-weight:700; letter-spacing:0.06em;
+    color:var(--grey-footer); z-index:20;
+  }
+  .page-number{
+    position:absolute; bottom:22px; right:32px;
+    font-size:13px; font-weight:700; color:var(--accent-blue-2); z-index:20;
+  }
+  .page-number-light{
+    position:absolute; bottom:22px; right:32px;
+    font-size:13px; font-weight:700; color:var(--white); z-index:20;
+  }
+
+  /* COVER / CONTACT shared look (full-bleed photo + top diagonal) */
+  .slide.cover{ background:#1a1a1a; }
+  .slide.cover .bg-photo{ position:absolute; top:0; left:0; right:0; bottom:0; z-index:1; }
+  .slide.cover .top-diagonal{
+    position:absolute; top:0; left:0; width:100%; height:34px;
+    background:var(--navy-dark);
+    clip-path: polygon(0 0, 100% 0, 100% 55%, 0 100%); z-index:5;
+  }
+  .slide.cover .cover-title{
+    position:absolute; top:38%; left:50%; transform:translate(-50%,-50%);
+    z-index:10; font-size:42px; font-weight:800; font-family:var(--font-black); color:var(--white);
+    letter-spacing:0.01em;
+  }
+  .slide.cover .cover-logo{
+    position:absolute; top:56%; left:50%; transform:translate(-50%,0); z-index:10;
+  }
+
+  /* SECTION DIVIDER */
+  .slide.section-divider{ background:#0a0a0a; }
+  .slide.section-divider .bg-photo{ position:absolute; top:0; left:0; right:0; bottom:0; z-index:1; }
+  .slide.section-divider .section-title{
+    position:absolute; top:48%; left:60px; transform:translateY(-50%);
+    z-index:10; font-size:28px; font-weight:800; font-family:var(--font-black); color:var(--white); max-width:560px;
+  }
+
+  /* AGENDA */
+  .slide.agenda{ background:var(--navy-dark); }
+  .slide.agenda .bg-photo{ position:absolute; top:0; left:0; right:0; bottom:0; z-index:1; opacity:0.4; }
+  .slide.agenda .top-diagonal{
+    position:absolute; top:0; left:0; width:100%; height:18px;
+    background:var(--navy-dark);
+    clip-path: polygon(0 0, 100% 0, 100% 60%, 0 100%); z-index:5;
+  }
+  .slide.agenda .agenda-title{
+    position:absolute; top:40px; left:64px; z-index:10;
+    font-size:24px; font-weight:800; font-family:var(--font-black); color:var(--white);
+  }
+  .slide.agenda .agenda-rule{
+    position:absolute; top:96px; left:64px; width:920px; height:5px;
+    background:var(--accent-blue); z-index:10;
+  }
+  .slide.agenda .agenda-list{ position:absolute; top:140px; left:64px; z-index:10; list-style:none; }
+  .slide.agenda .agenda-list li{ display:flex; align-items:center; gap:18px; margin-bottom:48px; }
+  .slide.agenda .agenda-badge{
+    width:36px; height:36px; border-radius:50%;
+    background:var(--accent-blue); color:var(--white); font-weight:800; font-size:18px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .slide.agenda .agenda-label{ color:var(--white); font-size:19px; font-weight:800; }
+
+  /* DISCLAIMER (plain, no header badge) */
+  .slide.disclaimer .plain-title{
+    position:absolute; top:30px; left:24px; z-index:10;
+    font-size:30px; font-weight:800; font-family:var(--font-black); color:var(--black);
+  }
+  .slide.disclaimer .plain-rule{
+    position:absolute; top:96px; left:24px; width:1232px; height:5px;
+    background:var(--accent-blue); z-index:10;
+  }
+  .slide.disclaimer .disclaimer-body{
+    position:absolute; top:130px; left:24px; width:1180px; z-index:10;
+    font-size:14px; line-height:1.7; color:var(--black);
+  }
+  .slide.disclaimer .disclaimer-body p{ margin-bottom:18px; }
+
+  /* CONTENT SLIDES — header with circular numbered badge, aligned to title cap-height */
+  .content .content-header{
+    position:absolute; top:20px; left:24px; z-index:10;
+    display:flex; align-items:center; gap:16px;
+  }
+  .content .section-badge{
+    width:38px; height:38px; border-radius:50%;
+    background:var(--accent-blue-2); color:var(--white); font-weight:800; font-size:19px;
+    font-family:var(--font-black);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .content .content-title{ color:var(--black); font-size:23px; font-weight:800; font-family:var(--font-black); line-height:38px; }
+  .content .content-subclaim{
+    position:absolute; top:64px; left:24px; width:1180px; z-index:10;
+    display:flex; align-items:center; gap:14px;
+  }
+  .content .subclaim-badge{
+    width:25px; height:25px; border-radius:50%;
+    background:transparent; border:2px solid var(--accent-blue-2); color:var(--accent-blue-2);
+    font-weight:800; font-size:13px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .content .subclaim-text{ color:var(--black); font-size:16px; font-style:italic; }
+  .content .content-rule{
+    position:absolute; left:24px; width:1232px; height:5px;
+    background:var(--accent-blue); z-index:10;
+  }
+  .content .eyebrow{
+    display:flex; align-items:center; gap:8px;
+    color:var(--black); font-size:14px; font-weight:800; margin-bottom:10px;
+  }
+  .content .eyebrow::before{ content:"\25B6"; color:var(--black); font-size:10px; }
+  .content .source-line{
+    position:absolute; bottom:90px; left:24px; right:36px; z-index:25;
+    font-size:9.5px; font-style:italic; color:#555; line-height:1.4;
+  }
+  /* Keep inline SVG charts inside the slide: never wider than their column,
+     capped in height, block-centred with a little breathing room. Prevents
+     charts overflowing the slide edges or the footer band. */
+  .content svg{
+    display:block; max-width:100% !important; max-height:330px;
+    height:auto; margin:8px 0;
+  }
+  .content .body-text{ color:var(--black); font-size:13.5px; line-height:1.55; }
+  .content .body-text ul{ padding-left:16px; }
+  .content .body-text li{ margin-bottom:8px; }
+  .content .body-text b{ font-weight:800; }
+
+  /* timeline (current situation style) */
+  .timeline{ position:absolute; left:24px; z-index:10; }
+  .timeline-row{ display:flex; align-items:flex-start; gap:16px; margin-bottom:14px; position:relative; }
+  .timeline-date{
+    background:var(--accent-blue); color:var(--white); font-weight:800; font-size:12px;
+    padding:6px 10px; border-radius:3px; min-width:64px; text-align:center; flex-shrink:0;
+  }
+  .timeline-text{ font-size:12.5px; color:var(--black); line-height:1.45; padding-top:5px; }
+  .timeline-text.boxed{
+    background:var(--accent-blue); color:var(--white); padding:8px 12px; border-radius:3px;
+  }
+
+  /* two-box opportunity table */
+  .opp-grid{ display:flex; gap:24px; }
+  .opp-grid > div{ flex:1; }
+  .opp-box-header{
+    background:var(--accent-blue); color:var(--white); font-weight:800; font-size:12.5px;
+    text-align:center; padding:10px; text-transform:uppercase;
+  }
+  .opp-box-body{
+    border:1px solid var(--accent-blue); border-top:none; padding:14px;
+    font-size:13px; line-height:1.6; color:var(--black);
+  }
+  .opp-box-body ul{ padding-left:16px; }
+  .opp-box-body li{ margin-bottom:8px; }
+
+  /* KPI row */
+  .kpi-grid{ display:flex; gap:20px; margin-top:16px; }
+  .kpi-item{ flex:1; text-align:center; }
+  .kpi-num{ color:var(--accent-blue-2); font-size:26px; font-weight:800; font-family:var(--font-black); }
+  .kpi-label{ font-size:11px; color:#444; margin-top:4px; line-height:1.3; }
+
+  /* governing bodies list (logo + paragraph rows) */
+  .gov-row{ display:flex; gap:14px; margin-bottom:14px; align-items:flex-start; }
+  .gov-logo{ width:56px; height:36px; flex-shrink:0; }
+  .gov-text{ font-size:12px; line-height:1.45; color:var(--black); }
+
+  /* structure table */
+  table.struct-table{ width:100%; border-collapse:collapse; font-size:12px; }
+  table.struct-table th{
+    font-size:11px; color:var(--accent-blue-2); font-weight:800; text-align:center;
+    padding:6px 4px; border-bottom:2px solid var(--accent-blue-2);
+  }
+  table.struct-table td{
+    text-align:center; padding:8px 4px; border-bottom:1px dashed #ccc; vertical-align:middle;
+  }
+
+  /* contact slide specifics */
+  .slide.contact .contact-title{
+    position:absolute; top:30px; left:24px; z-index:10;
+    font-size:30px; font-weight:800; font-family:var(--font-black); color:var(--white);
+  }
+  .slide.contact .contact-rule{
+    position:absolute; top:96px; left:24px; width:932px; height:5px;
+    background:var(--accent-blue); z-index:10;
+  }
+  .slide.contact .contact-block{
+    position:absolute; left:50%; transform:translateX(-50%); width:560px;
+    text-align:center; z-index:10; color:var(--white); font-size:16px;
+  }
+  .slide.contact .contact-icon{
+    width:34px; height:34px; margin:0 auto 8px; color:var(--accent-blue);
+    display:flex; align-items:center; justify-content:center; font-size:22px;
+  }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1 — COVER -->
+<div class="slide cover">
+  <div class="bg-photo img-placeholder">[ IMAGE: full-bleed background photo, relevant to the deck topic ]</div>
+  <div class="top-diagonal"></div>
+  <div class="cover-title">PROJECT TITLE</div>
+  <div class="cover-logo img-placeholder" style="width:170px;height:170px;">[ IMAGE: subject / client logo ]</div>
+  <div class="logo-chip"><img src="data:image/png;base64,PLACEHOLDER_IMAGE_DATA" alt="in the board room logo"></div>
+</div>
+
+<!-- SLIDE 2 — DISCLAIMER -->
+<div class="slide disclaimer">
+  <div class="plain-title">DISCLAIMER</div>
+  <div class="plain-rule"></div>
+  <div class="disclaimer-body">
+    <p>This summary description and other information included herein provided to you are intended only for information purposes and convenient reference. The information herein is for general guidance and discussion purposes only.</p>
+    <p>This document has been prepared solely for the information of the person to whom it has been delivered. The information contained herein is strictly confidential and is only for the use of the person to whom it is sent. The information contained herein may not be reproduced, distributed, or published by any recipient for any purpose without our prior written consent.</p>
+    <p>No reliance may be placed for any purpose on the information and opinions contained in this document or their accuracy or completeness. No representation, warranty or undertaking, express or implied, is given by us as to the accuracy or completeness of the information or opinions contained in this document.</p>
+    <p>This document is based on data room information, public sources, and discussions with management. Access to information is limited and partial. We expect feedback from the transaction team that may significantly impact some of the information presented herein.</p>
+  </div>
+  <div class="logo-chip"><img src="data:image/png;base64,PLACEHOLDER_IMAGE_DATA" alt="in the board room logo"></div>
+  <div class="footer-confidential">STRICTLY CONFIDENTIAL</div>
+</div>
+
+<!-- SLIDE 3 — SUMMARY -->
+<div class="slide agenda">
+  <div class="bg-photo img-placeholder">[ IMAGE: full-bleed dark background photo ]</div>
+  <div class="top-diagonal"></div>
+  <div class="agenda-title">SUMMARY</div>
+  <div class="agenda-rule"></div>
+  <ul class="agenda-list">
+    <li><span class="agenda-badge">1</span><span class="agenda-label">KEY INVESTMENT HIGHLIGHTS</span></li>
+    <li><span class="agenda-badge">2</span><span class="agenda-label">CURRENT SITUATION</span></li>
+    <li><span class="agenda-badge">3</span><span class="agenda-label">OPPORTUNITY PRESENTATION</span></li>
+    <li><span class="agenda-badge">4</span><span class="agenda-label">MARKET OVERVIEW</span></li>
+    <li><span class="agenda-badge">5</span><span class="agenda-label">APPENDIX</span></li>
+  </ul>
+  <div class="logo-chip"><img src="data:image/png;base64,PLACEHOLDER_IMAGE_DATA" alt="in the board room logo"></div>
+  <div class="page-number-light">3</div>
+</div>
+
+<!-- SLIDE 4 — SECTION DIVIDER: INVESTMENT HIGHLIGHTS -->
+<div class="slide section-divider">
+  <div class="bg-photo img-placeholder">[ IMAGE: full-bleed background photo, relevant to the deck topic ]</div>
+  <div class="section-title">1. INVESTMENT HIGHLIGHTS</div>
+  <div class="logo-chip"><img src="data:image/png;base64,PLACEHOLDER_IMAGE_DATA" alt="in the board room logo"></div>
+</div>
+
+<!-- SLIDE 5 — INVESTMENT HIGHLIGHTS: content with timeline + image grid -->
+<div class="slide content">
+  <div class="content-header">
+    <span class="section-badge">1</span>
+    <span class="content-title">INVESTMENT HIGHLIGHTS</span>
+  </div>
+  <div class="content-subclaim">
+    <span class="subclaim-badge">1</span>
+    <span class="subclaim-text">Highlight title goes here</span>
+  </div>
+  <div class="content-rule" style="top:108px;"></div>
+  <div style="position:absolute; top:136px; left:24px; width:1232px; height:480px; z-index:10; display:flex; gap:40px;">
+    <div style="flex:1;">
+      <div class="eyebrow">PARAGRAPH TITLE</div>
+      <div class="timeline" style="position:static;">
+        <div class="timeline-row"><div class="timeline-date">Year</div><div class="timeline-text"><b>Milestone label</b>: short description of this milestone, written in one or two lines of placeholder text.</div></div>
+        <div class="timeline-row"><div class="timeline-date">Year</div><div class="timeline-text"><b>Milestone label</b>: short description of this milestone, written in one or two lines of placeholder text.</div></div>
+        <div class="timeline-row"><div class="timeline-date">Year</div><div class="timeline-text"><b>Milestone label</b>: short description of this milestone, written in one or two lines of placeholder text.</div></div>
+        <div class="timeline-row"><div class="timeline-date">Year</div><div class="timeline-text"><b>Milestone label</b>: short description of this milestone, written in one or two lines of placeholder text.</div></div>
+        <div class="timeline-row"><div class="timeline-date">Year</div><div class="timeline-text"><b>Milestone label</b>: short description of this milestone, written in one or two lines of placeholder text.</div></div>
+      </div>
+    </div>
+    <div style="flex:1;">
+      <div class="eyebrow">PARAGRAPH TITLE</div>
+      <div class="img-placeholder" style="width:100%; height:150px; margin-bottom:14px;">[ IMAGE: infographic ]</div>
+      <div class="img-placeholder" style="width:100%; height:170px;">[ IMAGE: photo strip ]</div>
+    </div>
+  </div>
+  <div class="source-line">Source(s): xxxxxxxxxxxxxxxxxxxxxx</div>
+  <div class="logo-chip"><img src="data:image/png;base64,PLACEHOLDER_IMAGE_DATA" alt="in the board room logo"></div>
+  <div class="footer-confidential">STRICTLY CONFIDENTIAL</div>
+  <div class="page-number">5</div>
+</div>
+
+<!-- SLIDE 6 — INVESTMENT HIGHLIGHTS: KPI + transactions variant -->
+<div class="slide content">
+  <div class="content-header">
+    <span class="section-badge">1</span>
+    <span class="content-title">INVESTMENT HIGHLIGHTS</span>
+  </div>
+  <div class="content-subclaim">
+    <span class="subclaim-badge">2</span>
+    <span class="subclaim-text">Highlight title goes here</span>
+  </div>
+  <div class="content-rule" style="top:108px;"></div>
+  <div style="position:absolute; top:136px; left:24px; width:1232px; height:480px; z-index:10; display:flex; gap:40px;">
+    <div style="flex:1;">
+      <div class="eyebrow">DESCRIPTION</div>
+      <div class="body-text">
+        <ul>
+          <li><b>Paragraph title</b>: placeholder sentence describing this point in one or two lines of text.</li>
+          <li><b>Paragraph title</b>: placeholder sentence describing this point in one or two lines of text.</li>
+          <li><b>Paragraph title</b>: placeholder sentence describing this point, including a <b>highlighted figure</b> where relevant.</li>
+        </ul>
+      </div>
+      <div class="eyebrow" style="margin-top:18px;">KEY FIGURES</div>
+      <div class="kpi-grid">
+        <div class="kpi-item"><div class="kpi-num">XX</div><div class="kpi-label">Label describing this figure</div></div>
+        <div class="kpi-item"><div class="kpi-num">XX</div><div class="kpi-label">Label describing this figure</div></div>
+        <div class="kpi-item"><div class="kpi-num">XX</div><div class="kpi-label">Label describing this figure</div></div>
+      </div>
+    </div>
+    <div style="flex:1;">
+      <div class="eyebrow">LATEST TRANSACTIONS</div>
+      <div class="body-text">
+        <ul>
+          <li><b>Year</b>: short description of a relevant transaction, with key terms in <b>bold</b>.</li>
+          <li><b>Year</b>: short description of a relevant transaction, with key terms in <b>bold</b>.</li>
+        </ul>
+      </div>
+      <div class="img-placeholder" style="width:100%; height:260px; margin-top:12px;">[ IMAGE: photo grid ]</div>
+    </div>
+  </div>
+  <div class="source-line">Source(s): xxxxxxxxxxxxxxxxxxxxxx</div>
+  <div class="logo-chip"><img src="data:image/png;base64,PLACEHOLDER_IMAGE_DATA" alt="in the board room logo"></div>
+  <div class="footer-confidential">STRICTLY CONFIDENTIAL</div>
+  <div class="page-number">6</div>
+</div>
+
+<!-- SLIDE 7 — SECTION DIVIDER: CURRENT SITUATION -->
+<div class="slide section-divider">
+  <div class="bg-photo img-placeholder">[ IMAGE: full-bleed background photo, relevant to the deck topic ]</div>
+  <div class="section-title">2. CURRENT SITUATION</div>
+  <div class="logo-chip"><img src="data:image/png;base64,PLACEHOLDER_IMAGE_DATA" alt="in the board room logo"></div>
+</div>
+
+<!-- SLIDE 8 — CURRENT SITUATION: content, boxed timeline -->
+<div class="slide content">
+  <div class="content-header">
+    <span class="section-badge">2</span>
+    <span class="content-title">CURRENT SITUATION</span>
+  </div>
+  <div class="content-subclaim">
+    <span class="subclaim-badge">1</span>
+    <span class="subclaim-text">Period covered — from situation A to situation B</span>
+  </div>
+  <div class="content-rule" style="top:108px;"></div>
+  <div class="timeline" style="top:136px; width:1180px;">
+    <div class="timeline-row"><div class="timeline-date">Month Year</div><div class="timeline-text">Placeholder sentence describing this event in one line.</div></div>
+    <div class="timeline-row"><div class="timeline-date">Year</div><div class="timeline-text boxed" style="width:900px;">Placeholder sentence describing a more significant event, shown in an emphasised box.</div></div>
+    <div class="timeline-row"><div class="timeline-date">Month Year</div><div class="timeline-text">Placeholder sentence describing this event, including a <b>highlighted figure</b> where relevant.</div></div>
+    <div class="timeline-row"><div class="timeline-date">Month Year</div><div class="timeline-text">Placeholder sentence describing this event in one line.</div></div>
+    <div class="timeline-row"><div class="timeline-date">Period</div><div class="timeline-text boxed" style="width:900px;">Placeholder sentence describing a more significant event, shown in an emphasised box.</div></div>
+    <div class="timeline-row"><div class="timeline-date">Month Year</div><div class="timeline-text">Placeholder sentence describing this event in one line.</div></div>
+    <div class="timeline-row"><div class="timeline-date">Period</div><div class="timeline-text boxed" style="width:900px;">Placeholder sentence describing a more significant event, including a <b>highlighted figure</b> where relevant.</div></div>
+  </div>
+  <div class="source-line">Source(s): xxxxxxxxxxxxxxxxxxxxxx</div>
+  <div class="logo-chip"><img src="data:image/png;base64,PLACEHOLDER_IMAGE_DATA" alt="in the board room logo"></div>
+  <div class="footer-confidential">STRICTLY CONFIDENTIAL</div>
+  <div class="page-number">8</div>
+</div>
+
+<!-- SLIDE 9 — SECTION DIVIDER: OPPORTUNITY DESCRIPTION -->
+<div class="slide section-divider">
+  <div class="bg-photo img-placeholder">[ IMAGE: full-bleed background photo, relevant to the deck topic ]</div>
+  <div class="section-title">3. OPPORTUNITY DESCRIPTION</div>
+  <div class="logo-chip"><img src="data:image/png;base64,PLACEHOLDER_IMAGE_DATA" alt="in the board room logo"></div>
+</div>
+
+<!-- SLIDE 10 — OPPORTUNITY PRESENTATION: content, two-box thesis -->
+<div class="slide content">
+  <div class="content-header">
+    <span class="section-badge">3</span>
+    <span class="content-title">OPPORTUNITY PRESENTATION</span>
+  </div>
+  <div class="content-rule" style="top:66px;"></div>
+  <div style="position:absolute; top:94px; left:24px; width:1232px; z-index:10;">
+    <div class="eyebrow">INVESTMENT THESIS</div>
+    <div class="opp-grid">
+      <div>
+        <div class="opp-box-header">VALUE CREATION THROUGH EXISTING ASSETS</div>
+        <div class="opp-box-body">
+          <ul>
+            <li>Placeholder bullet describing an existing strength of the asset.</li>
+            <li>Placeholder bullet describing an existing strength of the asset.</li>
+            <li>Placeholder bullet describing an existing strength of the asset.</li>
+            <li>Placeholder bullet describing an existing strength of the asset.</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="opp-box-header">VALUE CREATION THROUGH UNEXPLOITED LEVERS</div>
+        <div class="opp-box-body">
+          <ul>
+            <li>Placeholder bullet describing an untapped opportunity.</li>
+            <li>Placeholder bullet describing an untapped opportunity.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="logo-chip"><img src="data:image/png;base64,PLACEHOLDER_IMAGE_DATA" alt="in the board room logo"></div>
+  <div class="footer-confidential">STRICTLY CONFIDENTIAL</div>
+  <div class="page-number">10</div>
+</div>
+
+<!-- SLIDE 11 — SECTION DIVIDER: MARKET OVERVIEW -->
+<div class="slide section-divider">
+  <div class="bg-photo img-placeholder">[ IMAGE: full-bleed background photo, relevant to the deck topic ]</div>
+  <div class="section-title">4. MARKET OVERVIEW</div>
+  <div class="logo-chip"><img src="data:image/png;base64,PLACEHOLDER_IMAGE_DATA" alt="in the board room logo"></div>
+</div>
+
+<!-- SLIDE 12 — MARKET OVERVIEW: description + governing bodies + structure table -->
+<div class="slide content">
+  <div class="content-header">
+    <span class="section-badge">4</span>
+    <span class="content-title">MARKET OVERVIEW</span>
+  </div>
+  <div class="content-subclaim">
+    <span class="subclaim-badge">1</span>
+    <span class="subclaim-text">Overview of the market</span>
+  </div>
+  <div class="content-rule" style="top:108px;"></div>
+  <div style="position:absolute; top:136px; left:24px; width:1232px; height:480px; z-index:10; display:flex; gap:40px;">
+    <div style="flex:1;">
+      <div class="eyebrow">DESCRIPTION</div>
+      <div class="body-text">
+        <ul>
+          <li><b>Paragraph title</b>: placeholder sentence describing this aspect of the market.</li>
+          <li><b>Paragraph title</b>: placeholder sentence describing this aspect of the market.</li>
+          <li><b>Paragraph title</b>: placeholder sentence describing this aspect of the market.</li>
+          <li><b>Paragraph title</b>: placeholder sentence describing this aspect of the market, including a <b>highlighted figure</b> where relevant.</li>
+          <li><b>Paragraph title</b>: placeholder sentence describing this aspect of the market.</li>
+        </ul>
+      </div>
+    </div>
+    <div style="flex:1;">
+      <div class="eyebrow">GOVERNING BODIES</div>
+      <div class="gov-row">
+        <div class="img-placeholder gov-logo" style="font-size:8px;">[ LOGO ]</div>
+        <div class="gov-text">Placeholder description of this governing body's role and remit.</div>
+      </div>
+      <div class="gov-row">
+        <div class="img-placeholder gov-logo" style="font-size:8px;">[ LOGO ]</div>
+        <div class="gov-text">Placeholder description of this governing body's role and remit.</div>
+      </div>
+      <div class="gov-row">
+        <div class="img-placeholder gov-logo" style="font-size:8px;">[ LOGO ]</div>
+        <div class="gov-text">Placeholder description of this governing body's role and remit.</div>
+      </div>
+      <div class="gov-row">
+        <div class="img-placeholder gov-logo" style="font-size:8px;">[ LOGO ]</div>
+        <div class="gov-text">Placeholder description of this governing body's role and remit.</div>
+      </div>
+      <div class="eyebrow" style="margin-top:6px;">STRUCTURE</div>
+      <table class="struct-table">
+        <tr><th>Category</th><th>Attribute</th><th>Attribute</th><th>Attribute</th><th>Attribute</th></tr>
+        <tr><td>Tier 1</td><td class="img-placeholder" style="height:24px; font-size:8px;">[ LOGO ]</td><td>XX</td><td>X / X</td><td class="img-placeholder" style="height:24px; font-size:8px;">[ LOGO ]</td></tr>
+        <tr><td>Tier 2</td><td class="img-placeholder" style="height:24px; font-size:8px;">[ LOGO ]</td><td>XX</td><td>X / X</td><td class="img-placeholder" style="height:24px; font-size:8px;">[ LOGO ]</td></tr>
+        <tr><td>Tier 3</td><td>/</td><td>XX</td><td>X / X</td><td class="img-placeholder" style="height:24px; font-size:8px;">[ LOGO ]</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="source-line">Source(s): xxxxxxxxxxxxxxxxxxxxxx — Note(s): xxxxxxxxxxxxxxxxxxxxxx</div>
+  <div class="logo-chip"><img src="data:image/png;base64,PLACEHOLDER_IMAGE_DATA" alt="in the board room logo"></div>
+  <div class="footer-confidential">STRICTLY CONFIDENTIAL</div>
+  <div class="page-number">12</div>
+</div>
+
+<!-- SLIDE 13 — MARKET OVERVIEW: competitive landscape variant -->
+<div class="slide content">
+  <div class="content-header">
+    <span class="section-badge">4</span>
+    <span class="content-title">MARKET OVERVIEW</span>
+  </div>
+  <div class="content-subclaim">
+    <span class="subclaim-badge">2</span>
+    <span class="subclaim-text">Focus on the competitive landscape</span>
+  </div>
+  <div class="content-rule" style="top:108px;"></div>
+  <div style="position:absolute; top:136px; left:24px; width:1232px; height:480px; z-index:10; display:flex; gap:40px;">
+    <div style="flex:1;">
+      <div class="eyebrow">COMPETITIVE LANDSCAPE</div>
+      <div class="body-text">
+        <ul>
+          <li><b>Paragraph title</b>: placeholder sentence describing this aspect, including a <b>highlighted figure</b> where relevant.</li>
+          <li><b>Paragraph title</b>: placeholder sentence describing this aspect of the competitive landscape.</li>
+          <li><b>Paragraph title</b>: placeholder sentence describing this aspect of the competitive landscape.</li>
+        </ul>
+      </div>
+      <div class="img-placeholder" style="width:100%; height:200px; margin-top:14px;">[ IMAGE: chart / benchmark table ]</div>
+    </div>
+    <div style="flex:1;">
+      <div class="eyebrow">KEY FIGURES</div>
+      <div class="kpi-grid">
+        <div class="kpi-item"><div class="kpi-num">XX</div><div class="kpi-label">Label describing this figure</div></div>
+        <div class="kpi-item"><div class="kpi-num">XX</div><div class="kpi-label">Label describing this figure</div></div>
+        <div class="kpi-item"><div class="kpi-num">XX</div><div class="kpi-label">Label describing this figure</div></div>
+      </div>
+      <div class="img-placeholder" style="width:100%; height:240px; margin-top:18px;">[ IMAGE: chart ]</div>
+    </div>
+  </div>
+  <div class="source-line">Source(s): xxxxxxxxxxxxxxxxxxxxxx</div>
+  <div class="logo-chip"><img src="data:image/png;base64,PLACEHOLDER_IMAGE_DATA" alt="in the board room logo"></div>
+  <div class="footer-confidential">STRICTLY CONFIDENTIAL</div>
+  <div class="page-number">13</div>
+</div>
+
+<!-- SLIDE 14 — SECTION DIVIDER: APPENDIX -->
+<div class="slide section-divider">
+  <div class="bg-photo img-placeholder">[ IMAGE: full-bleed background photo, relevant to the deck topic ]</div>
+  <div class="section-title">5. APPENDIX</div>
+  <div class="logo-chip"><img src="data:image/png;base64,PLACEHOLDER_IMAGE_DATA" alt="in the board room logo"></div>
+</div>
+
+<!-- SLIDE 15 — CONTACT -->
+<div class="slide cover contact">
+  <div class="bg-photo img-placeholder">[ IMAGE: full-bleed background photo, relevant to the deck topic ]</div>
+  <div class="top-diagonal"></div>
+  <div class="contact-title">CONTACT</div>
+  <div class="contact-rule"></div>
+  <div class="contact-block" style="top:200px;">
+    <div class="contact-icon">&#9742;</div>
+    Stephane Benichou: +33 6 65 09 40 76
+  </div>
+  <div class="contact-block" style="top:340px;">
+    <div class="contact-icon">&#9993;</div>
+    sbenichou@intheboardroom.fr
+  </div>
+  <div class="contact-block" style="top:480px;">
+    <div class="contact-icon">&#128205;</div>
+    10 rue de Penthièvre<br>75008 Paris, France
+  </div>
+  <div class="logo-chip"><img src="data:image/png;base64,PLACEHOLDER_IMAGE_DATA" alt="in the board room logo"></div>
+  <div class="page-number-light">15</div>
+</div>
+
+</body>
+</html>
