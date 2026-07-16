@@ -765,21 +765,40 @@ complete.
 PRINT_CSS = """
 <style id="itbr-print">
 @media print {
+  /* One page per slide, exactly the slide's 1280x720 px (16:9). */
   @page { size: 1280px 720px; margin: 0; }
-  html, body { background: #FFFFFF !important; margin: 0 !important; padding: 0 !important; }
+
+  /* The deck's body is a flex column with gap:40px and padding:40px on a dark
+     background. Left as-is when printing, those gaps and that padding push each
+     slide down/right inside its page, so the bottom and right get clipped. Kill
+     the flex layout for print so every slide maps 1:1 onto its own page. */
+  html, body {
+    background: #FFFFFF !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    gap: 0 !important;
+    width: 1280px !important;
+  }
   .slide {
+    width: 1280px !important;
+    height: 720px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important;
     page-break-after: always;
     break-after: page;
     page-break-inside: avoid;
     break-inside: avoid;
-    margin: 0 !important;
-    box-shadow: none !important;
   }
   .slide:last-child { page-break-after: auto; break-after: auto; }
-  /* Charts are inline SVG. Browsers strip background colours when printing
-     unless told otherwise, which would render bars invisible. These rules
-     force the fills through, and keep a chart from being split across pages. */
-  svg, svg * {
+
+  /* Print engines drop background colours by default, which would turn the dark
+     cover/divider slides white (with invisible white text) and hide chart bars.
+     Force every fill through. */
+  * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -1131,9 +1150,10 @@ if st.session_state.deck_html:
             height=52,
         )
         st.caption(
-            "Opens the deck in a new tab and launches the print dialog: choose "
-            "'Save as PDF', Layout Landscape. If a pop-up is blocked, a print-ready "
-            "file downloads instead: open it and it prints itself."
+            "Opens the deck and launches the print dialog. For slides to fill each "
+            "page: Destination 'Save as PDF', Margins 'None', Scale '100%' (or "
+            "'Default', not 'Fit to page'). If a pop-up is blocked, a print-ready "
+            "file downloads instead: open it and print with the same settings."
         )
 
     # --- Editable PowerPoint (.pptx) -----------------------------------------
