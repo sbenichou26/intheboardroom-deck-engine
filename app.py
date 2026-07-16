@@ -1136,6 +1136,38 @@ if st.session_state.deck_html:
             "file downloads instead: open it and it prints itself."
         )
 
+    # --- Editable PowerPoint (.pptx) -----------------------------------------
+    # Built on demand: a cheap structuring call (sonnet, no web search) turns the
+    # finished deck into a JSON structure, which we render into native, editable
+    # PowerPoint objects (text boxes, tables, charts). The HTML deck stays the
+    # source of truth; this is a convenience export, so it runs only on click.
+    if st.button("Build editable PowerPoint (.pptx)"):
+        with st.spinner("Structuring the deck into editable PowerPoint (~20-40 s)..."):
+            try:
+                import pptx_export
+                client = Anthropic(api_key=api_key)
+                structure = pptx_export.deck_to_structure(client, st.session_state.deck_html)
+                st.session_state.pptx_bytes = pptx_export.build_pptx(structure).getvalue()
+                st.session_state.pptx_slug = slug
+            except Exception as e:
+                st.session_state.pptx_bytes = None
+                st.error("PowerPoint build failed. Full technical details below:")
+                st.exception(e)
+
+    if st.session_state.get("pptx_bytes"):
+        st.download_button(
+            label="Download .pptx",
+            data=st.session_state.pptx_bytes,
+            file_name=f"boardroom_deck_{st.session_state.get('pptx_slug', slug)}.pptx",
+            mime=("application/vnd.openxmlformats-officedocument."
+                  "presentationml.presentation"),
+        )
+        st.caption(
+            "Editable in PowerPoint / Keynote / Google Slides. Charts and tables are "
+            "native objects, not images. Structured from the deck by the model, so "
+            "verify the figures against the HTML deck before sending."
+        )
+
     components.html(st.session_state.deck_html, height=760, scrolling=True)
 
 st.markdown(
