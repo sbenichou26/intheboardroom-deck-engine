@@ -323,12 +323,34 @@ is simply wrong, and a reader cannot detect it. Rules:
   revenue headline, trust the accounts for the financial slides and note the discrepancy
   rather than blending the two.
 
+INTERNAL CONSISTENCY - ONE VALUE PER METRIC. THIS IS A HARD RULE.
+A given metric must carry the SAME number everywhere it appears in the deck. Decide each
+figure once (e.g. FY2024-25 revenue = 837), then reuse that exact value verbatim on every
+slide, chart, KPI block and in the executive summary. Never show 806 on one slide and 810
+on another for the same metric and period. The same holds for names, dates and
+percentages. Before you output the deck, RE-READ IT and reconcile every figure that
+appears more than once: they must match to the digit. Do not repeat the same fact, bullet
+or paragraph on multiple slides either: say each thing once, on the slide where it belongs.
+Contradictory or duplicated numbers destroy a memo's credibility faster than a missing one.
+
 ===========================================================================
 RESEARCH SCOPE - PUBLIC (COVER THESE IN DEPTH)
 ===========================================================================
 This checklist is derived from a real football M&A due diligence index. The following are
 genuinely researchable from public sources. Cover each one that has verifiable data,
 each as its own slide or as a substantial block within a slide:
+
+EXECUTIVE SUMMARY (REQUIRED - the FIRST content slide, right after the agenda)
+A one-slide synthesis a fund partner reads in 60 seconds:
+- One or two sentences on what the asset is and the investment angle (why look at it now).
+- A KPI row with the headline financials for the most recent COMPLETE year, period
+  labelled: revenue, wage-to-revenue ratio, net result, squad market value, stadium
+  capacity. Use only figures you actually sourced.
+- 3 to 5 "key points" bullets: ownership / sale context, revenue trajectory, main
+  strengths, and the single principal risk.
+Every number here MUST match the detailed slides exactly (see INTERNAL CONSISTENCY). End
+the slide with a short source-line, e.g. "Figures sourced on the detailed slides that
+follow", plus the primary source of the headline revenue figure.
 
 CORPORATE & GOVERNANCE
 - Legal entity, corporate structure, group organigram, subsidiaries
@@ -368,6 +390,13 @@ REVENUE LINES (each in detail)
   to prevent.
   Show this breakdown for at least two periods where available, so the shift over time is
   visible, and chart it as a stacked or grouped bar (see CHARTS).
+- REVENUE ATTRIBUTION IN PERCENT. For each revenue line, state BOTH the absolute figure AND
+  its share of total revenue as a percentage, for the most recent complete year (e.g.
+  "Broadcasting EUR 245m, 29% of revenue"). A fund reads the revenue mix in percentages.
+  Compute each percentage from the sourced absolute figures (line / total), and make sure
+  they sum to ~100%. If a line is not disclosed, do not infer its percentage. Carry these
+  percentages into the revenue-split chart's legend, and consider a dedicated "revenue mix"
+  view (donut or 100%-stacked bar) for the latest year.
 - Matchday: stadium capacity, average attendance, occupancy rate, season ticket numbers,
   ticket pricing where published, hospitality offering
 - Broadcasting: domestic league distribution, European competition revenue, international
@@ -387,14 +416,27 @@ SPORTING PERFORMANCE (dedicated slide)
   driver, so tie sporting results to their financial consequence where the link is
   documented
 
-CLUB HISTORY TIMELINE (dedicated slide, using the template's .timeline component)
-A chronological timeline of the defining moments of the club, mixing:
+CLUB HISTORY TIMELINE (REQUIRED - a dedicated slide, using the template's .timeline component)
+This slide is MANDATORY in every deck: do not skip it. A chronological timeline of the
+defining moments of the club, with 6 to 10 entries mixing:
 - Corporate: foundation, changes of ownership, capital increases, major commercial deals,
   stadium moves or builds
 - Sporting: major trophies, historic European runs, promotions/relegations
 - People: landmark players, defining managers, key executives
 Every entry must have a real, sourced date. This slide is what gives a reader the shape of
 the asset in ten seconds, so choose genuinely defining moments, not filler.
+
+THE CITY / LOCAL MARKET (REQUIRED - a dedicated slide)
+Context on the club's home city and region, because it frames commercial upside:
+- Population of the city AND its metropolitan area, with the source and year.
+- Local economy: main industries, notable local companies (potential sponsors), income
+  level or GDP where reported.
+- A brief history and cultural identity of the city, and its relationship to the club.
+- Regional reach: how large a fanbase catchment the city and region represent.
+Attribute every figure (INSEE or the national statistics office, city hall, official
+economic data) with its year. Chart the population where a comparative or multi-year
+sourced figure exists. Do not invent demographic or economic figures: omit what you cannot
+source.
 
 SPORTING
 - Squad composition, squad size, average age
