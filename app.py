@@ -1087,35 +1087,54 @@ if st.session_state.deck_html:
             mime="text/html",
         )
     with e2:
-        # Opens the deck in a new tab and triggers the browser print dialog.
-        # The injected @media print rules give one slide per landscape page,
-        # so "Save as PDF" in that dialog produces a clean deck PDF. Done
-        # browser-side so it needs no extra system dependency.
-        deck_b64 = base64.b64encode(
-            st.session_state.deck_html.encode("utf-8")
-        ).decode("ascii")
+        # PDF export, browser-side so it needs no server dependency and keeps the
+        # exact Chrome print rendering the deck's @media print CSS targets.
+        # The old version used window.open("") + document.write, which Streamlit's
+        # sandboxed component iframe blocks, so nothing happened. This version
+        # builds a Blob URL (reliable) and opens it in a new tab that auto-launches
+        # the print dialog; if the pop-up is blocked it downloads a print-ready
+        # file instead, which prints itself when opened.
+        autoprint = (
+            "<script>window.addEventListener('load',function(){"
+            "setTimeout(function(){window.print();},500);});</script>"
+        )
+        _deck = st.session_state.deck_html
+        if "</body>" in _deck:
+            print_html = _deck.replace("</body>", autoprint + "</body>", 1)
+        else:
+            print_html = _deck + autoprint
+        deck_b64 = base64.b64encode(print_html.encode("utf-8")).decode("ascii")
         components.html(
             f"""
             <button id="pdfbtn" style="
                 width:100%; padding:0.65rem 1.5rem; border:none; border-radius:6px;
                 background:{NAVY}; color:#fff; font-weight:600; font-size:14px;
                 font-family:Inter,sans-serif; cursor:pointer;">
-                Export as PDF
+                Save as PDF
             </button>
             <script>
             document.getElementById("pdfbtn").onclick = function() {{
-                const html = atob("{deck_b64}");
-                const w = window.open("", "_blank");
-                w.document.open();
-                w.document.write(html);
-                w.document.close();
-                w.onload = function() {{ setTimeout(function() {{ w.print(); }}, 600); }};
+                const bin = atob("{deck_b64}");
+                const bytes = new Uint8Array(bin.length);
+                for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+                const blob = new Blob([bytes], {{type: "text/html;charset=utf-8"}});
+                const url = URL.createObjectURL(blob);
+                const w = window.open(url, "_blank");
+                if (!w) {{
+                    const a = document.createElement("a");
+                    a.href = url; a.download = "boardroom_deck_print.html";
+                    document.body.appendChild(a); a.click(); a.remove();
+                }}
             }};
             </script>
             """,
             height=52,
         )
-        st.caption("Opens a print view. Choose 'Save as PDF', landscape.")
+        st.caption(
+            "Opens the deck in a new tab and launches the print dialog: choose "
+            "'Save as PDF', Layout Landscape. If a pop-up is blocked, a print-ready "
+            "file downloads instead: open it and it prints itself."
+        )
 
     components.html(st.session_state.deck_html, height=760, scrolling=True)
 
