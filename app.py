@@ -6,6 +6,7 @@ import re
 import sys
 import json
 import base64
+from io import BytesIO
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -855,11 +856,54 @@ if "deck_html" not in st.session_state:
 
 api_key = os.environ.get("ANTHROPIC_API_KEY") or st.secrets.get("ANTHROPIC_API_KEY", None)
 
+
+def extract_client_materials(uploaded_files) -> str:
+    """Read attached private files (txt/md/csv/pdf/docx) into plain text, to be
+    injected into the generation prompt and labelled 'client-provided'. Best
+    effort: an unreadable file is noted and skipped, never fatal."""
+    parts = []
+    for uf in uploaded_files or []:
+        name = getattr(uf, "name", "file")
+        ext = name.lower().rsplit(".", 1)[-1] if "." in name else ""
+        try:
+            data = uf.getvalue()
+            if ext in ("txt", "md", "csv"):
+                parts.append(f"--- {name} ---\n" + data.decode("utf-8", errors="replace"))
+            elif ext == "pdf":
+                import pypdf
+                reader = pypdf.PdfReader(BytesIO(data))
+                text = "\n".join((page.extract_text() or "") for page in reader.pages)
+                parts.append(f"--- {name} ---\n" + text)
+            elif ext == "docx":
+                import docx
+                doc = docx.Document(BytesIO(data))
+                text = "\n".join(p.text for p in doc.paragraphs)
+                parts.append(f"--- {name} ---\n" + text)
+            else:
+                parts.append(f"--- {name}: unsupported type, skipped ---")
+        except Exception as e:
+            parts.append(f"--- {name}: could not read ({type(e).__name__}); skipped ---")
+    return "\n\n".join(parts).strip()
+
+
 raw_input = st.text_input(
     "Target asset - club, league, or sports property",
     placeholder="e.g. PSG, Paris Saint-Germain, Stade Brestois, IOF...",
     key="raw_input",
 )
+
+uploaded_files = st.file_uploader(
+    "Optional - attach private / data-room materials. Their figures are used but "
+    "labelled 'Client-provided / data-room' in the deck, kept distinct from public sources.",
+    type=["txt", "md", "csv", "pdf", "docx"],
+    accept_multiple_files=True,
+    key="uploads",
+)
+if uploaded_files:
+    st.caption(
+        f"{len(uploaded_files)} file(s) attached: "
+        + ", ".join(f.name for f in uploaded_files)
+    )
 
 if st.button("Identify asset"):
     if not raw_input.strip():
@@ -923,12 +967,35 @@ if st.session_state.resolved:
             client = Anthropic(api_key=api_key)
             canonical_name = r.get("canonical_name", raw_input.strip())
 
+            client_text = extract_client_materials(uploaded_files)
+            MAX_CLIENT_CHARS = 40000
+            truncated = len(client_text) > MAX_CLIENT_CHARS
+            if truncated:
+                client_text = client_text[:MAX_CLIENT_CHARS]
+            client_block = ""
+            if client_text:
+                client_block = (
+                    "\n\n=== CLIENT-PROVIDED / DATA-ROOM MATERIALS (PRIVATE) ===\n"
+                    "These materials were supplied privately by the user. You MAY use their "
+                    "figures and facts even though they are not public, BUT any slide that "
+                    "uses them MUST carry a source-line reading 'Client-provided / data-room "
+                    "material' (never present a private figure as a public source). Keep "
+                    "public-sourced and client-provided figures distinguishable. All "
+                    "integrity rules still apply: do not invent beyond what these materials "
+                    "or public sources actually state; if a client figure conflicts with a "
+                    "public one, use the client figure and note the discrepancy.\n"
+                    + ("[Note: materials were truncated to fit.]\n" if truncated else "")
+                    + "\n" + client_text
+                    + "\n=== END CLIENT-PROVIDED MATERIALS ===\n"
+                )
+
             user_prompt = (
                 f'Target asset (confirmed): "{canonical_name}" '
-                f'({r.get("entity_type", "entity")}).\n\n'
-                "Produce the comprehensive Discussion Materials deck. Reference "
+                f'({r.get("entity_type", "entity")}).'
+                + client_block
+                + "\n\nProduce the comprehensive Discussion Materials deck. Reference "
                 "template to clone (structure and CSS only):\n\n"
-                f"{template_html}"
+                + template_html
             )
 
             status_box.info(
