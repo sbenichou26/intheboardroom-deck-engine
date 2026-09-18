@@ -758,16 +758,30 @@ You will be given the full HTML of intheboardroom's real template as reference.
 - Specifically: placeholders marked [ IMAGE: chart ] and [ IMAGE: infographic ] must be
   replaced by a real inline SVG chart built from sourced figures (see the CHARTS section),
   not simply deleted, unless you genuinely found no numeric series for that slide.
-  Placeholders for photos ([ IMAGE: full-bleed background photo ], [ IMAGE: photo grid ],
-  [ IMAGE: photo strip ], [ IMAGE: subject / client logo ]) should be removed, since we
-  cannot source real photography.
+- REAL IMAGES ARE NOW SUPPORTED via tokens the app resolves after you finish (it fetches
+  licensed CC / public-domain images, compresses and embeds them). Instead of removing the
+  photo placeholders, replace each with ONE of these tokens, using a SPECIFIC real query:
+    [[CREST: <official entity name>]]  for the subject / client logo placeholder
+    [[BGPHOTO: <specific place>]]       for a full-bleed background photo (cover, section
+                                        dividers, contact), e.g. [[BGPHOTO: Parc des
+                                        Princes Paris]] or [[BGPHOTO: Paris skyline]]
+    [[PHOTO: <specific subject>]]       for an in-slide photo (stadium slide, city slide)
+  Use images where they genuinely add value: a crest near the cover title, a stadium photo
+  on the stadium slide, a city photo on the city slide, a relevant background on the cover
+  and section dividers. Queries must be specific and real (a stadium name, a city name);
+  vague queries return nothing. The app SILENTLY DROPS any token it cannot resolve, so an
+  image must never carry meaning the text does not: every slide must read correctly with no
+  image at all. Use at most ~8 images across the whole deck. Never invent a caption for a
+  photo, and never put a [[PHOTO]] token where a real data chart belongs.
 
 DARK SLIDES - IMPORTANT, THIS HAS GONE WRONG BEFORE.
 Several template slides have a dark background BY DESIGN and expect a full-bleed photo on
 top of it: .slide.cover (#1a1a1a), .slide.section-divider (#0a0a0a), .slide.agenda and
-.slide.contact (navy). Because we cannot source photography, that photo placeholder gets
-removed, and the slide then renders as a large EMPTY BLACK RECTANGLE. That is what has been
-appearing in generated decks, and it looks broken.
+.slide.contact (navy). Put a [[BGPHOTO: <specific place>]] token in that full-bleed photo
+slot so the app can fill it with a licensed image. The app may not find one, in which case
+the token is dropped and the slide falls back to its dark background: that is fine ONLY if
+the slide still carries real light-coloured text. A dark slide with neither a resolved
+photo nor text renders as an empty black rectangle, which looks broken.
 
 Rules to prevent it:
 - Keep the COVER, the AGENDA/SUMMARY, and the CONTACT slide. They are dark by design and
@@ -776,8 +790,8 @@ Rules to prevent it:
 - SECTION DIVIDERS: keep them ONLY if they carry a large, legible section title in white on
   the dark background. A section divider with its title but no photo is fine and looks
   deliberate. A section divider with no title is an empty black slide: delete it.
-- NEVER produce a slide whose entire content was an image placeholder. If removing the
-  photo placeholder leaves a slide with no text, delete the whole slide.
+- NEVER let a slide's entire content be an image token: the app may drop it, leaving the
+  slide empty. Every slide must carry real text; if it would not, delete the slide.
 - All body/content slides must be WHITE background with dark text. Do not put chart or
   table content on a dark slide.
 - Every dark slide must have light text (#FFFFFF or #C7CCF5). Never dark text on a dark
@@ -943,6 +957,81 @@ def extract_client_materials(uploaded_files) -> str:
         except Exception as e:
             parts.append(f"--- {name}: could not read ({type(e).__name__}); skipped ---")
     return "\n\n".join(parts).strip()
+
+
+def embed_images(html: str, canonical_name: str, max_images: int = 8):
+    """Resolve the model's image tokens into embedded, licensed images.
+
+    The model emits machine-readable tokens instead of removing photo slots:
+      [[CREST: <entity>]]   -> club crest / lead image (Wikipedia)
+      [[BGPHOTO: <query>]]  -> full-bleed background photo (Openverse, CC)
+      [[PHOTO: <query>]]    -> in-slide photo (Openverse, CC)
+    Each is fetched, compressed and base64-embedded so the deck stays offline-safe.
+    A token that cannot be resolved is simply removed, so the slide keeps working
+    on its text alone. Returns (html, credits): CC BY images require a visible
+    credit, added as a compact line before </body>."""
+    try:
+        import image_fetch
+    except Exception:
+        cleaned = re.sub(r"\[\[(?:PHOTO|BGPHOTO|CREST):[^\]]*\]\]", "", html)
+        return cleaned, []
+
+    state = {"count": 0}
+    credits = []
+
+    def crest_repl(m):
+        if state["count"] >= max_images:
+            return ""
+        res = image_fetch.resolve_crest(m.group(1).strip() or canonical_name)
+        if not res:
+            return ""
+        state["count"] += 1
+        return (f'<img src="{res["data_uri"]}" alt="crest" '
+                f'style="max-height:110px;width:auto;object-fit:contain;">')
+
+    def bg_repl(m):
+        q = m.group(1).strip()
+        if not q or state["count"] >= max_images:
+            return ""
+        res = image_fetch.resolve_photo(q, max_w=1280, quality=60)
+        if not res:
+            return ""
+        state["count"] += 1
+        credits.append(res["attribution"])
+        return (f'<img src="{res["data_uri"]}" alt="" '
+                f'style="position:absolute;inset:0;width:100%;height:100%;'
+                f'object-fit:cover;z-index:0;">')
+
+    def photo_repl(m):
+        q = m.group(1).strip()
+        if not q or state["count"] >= max_images:
+            return ""
+        res = image_fetch.resolve_photo(q)
+        if not res:
+            return ""
+        state["count"] += 1
+        credits.append(res["attribution"])
+        return (f'<img src="{res["data_uri"]}" alt="" '
+                f'style="width:100%;height:100%;object-fit:cover;border-radius:4px;">')
+
+    html = re.sub(r"\[\[CREST:\s*([^\]]*)\]\]", crest_repl, html)
+    html = re.sub(r"\[\[BGPHOTO:\s*([^\]]*)\]\]", bg_repl, html)
+    html = re.sub(r"\[\[PHOTO:\s*([^\]]*)\]\]", photo_repl, html)
+    html = re.sub(r"\[\[(?:PHOTO|BGPHOTO|CREST):[^\]]*\]\]", "", html)
+
+    if credits:
+        uniq = list(dict.fromkeys(credits))
+        credit_html = (
+            '<div style="max-width:1280px;margin:8px auto;padding:6px 24px;'
+            'font-size:9px;color:#6E6E8A;font-family:Arial,sans-serif;">'
+            'Image credits: ' + " &middot; ".join(uniq) + '</div>'
+        )
+        if "</body>" in html:
+            html = html.replace("</body>", credit_html + "</body>", 1)
+        else:
+            html = html + credit_html
+
+    return html, credits
 
 
 raw_input = st.text_input(
@@ -1114,6 +1203,9 @@ if st.session_state.resolved:
 
             if LOGO_B64:
                 html_result = html_result.replace("PLACEHOLDER_IMAGE_DATA", LOGO_B64)
+
+            status_box.info("Fetching and embedding licensed images (Openverse, CC)...")
+            html_result, _image_credits = embed_images(html_result, canonical_name)
 
             html_result = add_print_css(html_result)
 

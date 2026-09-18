@@ -3,3 +3,5 @@ anthropic
 pypdf
 python-docx
 python-pptx
+pillow
+certifi
