@@ -259,8 +259,28 @@ shorter, fully-sourced slide is always better than a complete but partly invente
 Prefer primary sources: audited annual accounts, DNCG and league financial reports, UEFA
 benchmarking reports, official club/league communications, company registries, regulatory
 filings, stock exchange filings. Wikipedia and aggregators are a starting point to locate
-a primary source, never a final citation. Corroborate material figures across at least two
-independent sources where feasible.
+a primary source, never a final citation.
+
+RESEARCH DEPTH, SOURCE DIVERSITY AND VERIFICATION - DO REAL RESEARCH, NOT ONE PASS.
+This deck must read as the product of genuine diligence, not a single search. Rules:
+- DEPTH: run several distinct searches per topic, with varied queries (official site,
+  filed accounts, league/UEFA data, financial press, company registry, reputable
+  analysts). Do not stop at the first result, and do not build a whole slide from a single
+  page. Follow leads: if a press article cites a figure, go find the primary document it
+  came from.
+- CROSS-VERIFICATION (mandatory for material figures): revenue, net result, wage bill,
+  ownership stakes, valuations, attendance and transfer fees must EACH be corroborated
+  across at least TWO independent sources. If two credible sources disagree, state both,
+  say which you use and why, and flag the discrepancy: never silently pick one.
+- SOURCE DIVERSITY: the deck as a whole must draw on a RANGE of distinct sources, not the
+  same one or two repeated on every slide. Each slide's source-line names the actual,
+  specific sources used for THAT slide's figures (title and date), not a generic list.
+  Leaning on Wikipedia or a single aggregator across the whole deck is a failure.
+- RECENCY: prefer the most recent available data and state its date; note when the latest
+  figure you could find is old.
+- A figure that survives real cross-checking is worth ten that do not. When you cannot
+  verify a material figure to this standard, omit it or move it to the Information
+  Requests slide.
 
 SOURCE HIERARCHY FOR FINANCIAL FIGURES - STRICT ORDER, NOT A SUGGESTION.
 For every financial figure you must work down this ladder, and you must exhaust each rung
@@ -333,6 +353,26 @@ percentages. Before you output the deck, RE-READ IT and reconcile every figure t
 appears more than once: they must match to the digit. Do not repeat the same fact, bullet
 or paragraph on multiple slides either: say each thing once, on the slide where it belongs.
 Contradictory or duplicated numbers destroy a memo's credibility faster than a missing one.
+
+NON-REPETITION ACROSS SLIDES - PLAN A CONTENT MAP FIRST. THIS IS A HARD RULE.
+Repeating slide 1's facts again on slide 3 is the most common failure of these decks.
+Before writing, assign every major topic and fact to exactly ONE home slide, and do not
+restate it elsewhere:
+- Each of these lives on ONE slide only, never repeated: ownership stakes and owner
+  identity (ownership slide); headline revenue and the P&L (financial slide); revenue
+  split by line (revenue slide); stadium name, capacity and plans (stadium slide); squad
+  value and squad profile (sporting slide); kit and shirt sponsor and commercial deals
+  (sponsorship slide); social-media following (fanbase slide).
+- If a later slide needs a fact that lives elsewhere, refer to it in a few words without
+  restating the figure and its explanation (e.g. "on European qualification, see Sporting
+  Performance"); do not re-explain it.
+- The EXECUTIVE SUMMARY is the ONLY slide allowed to restate headline figures, and it
+  states each once, as a short summary line. Every OTHER slide must ADD something the
+  summary did not say: a breakdown, a trend, context or a comparison. A detailed slide that
+  merely re-prints the summary's sentence has failed.
+- Each slide must earn its place. If a slide would mostly duplicate another, merge the two
+  or drop it. A tight 15-slide deck with no repetition beats a padded 22-slide one that
+  says the same things three times.
 
 ===========================================================================
 RESEARCH SCOPE - PUBLIC (COVER THESE IN DEPTH)
@@ -1034,7 +1074,7 @@ if st.session_state.resolved:
                 max_tokens=32000,
                 system=SYSTEM_INSTRUCTIONS,
                 tools=[
-                    {"type": "web_search_20250305", "name": "web_search", "max_uses": 40}
+                    {"type": "web_search_20250305", "name": "web_search", "max_uses": 55}
                 ],
                 messages=[{"role": "user", "content": user_prompt}],
             ) as stream:
